@@ -31,6 +31,7 @@ template(`xserver_restricted_role',`
 	gen_require(`
 		type xserver_t, xserver_tmp_t, xserver_tmpfs_t;
 		type user_fonts_t, user_fonts_cache_t, user_fonts_config_t;
+		type user_themes_t;
 		type iceauth_t, iceauth_exec_t, iceauth_home_t;
 		type xauth_t, xauth_exec_t, xauth_home_t;
 		type xdm_t, xdm_tmp_t;
@@ -52,6 +53,9 @@ template(`xserver_restricted_role',`
 
 	manage_dirs_pattern($2, user_fonts_cache_t, user_fonts_cache_t)
 	manage_files_pattern($2, user_fonts_cache_t, user_fonts_cache_t)
+
+	allow $2 user_themes_t:dir list_dir_perms;
+	allow $2 user_themes_t:file read_file_perms;
 
 	stream_connect_pattern($2, xserver_tmp_t, xserver_tmp_t, xserver_t)
 	files_search_tmp($2)
@@ -172,6 +176,7 @@ template(`xserver_role',`
 	gen_require(`
 		type iceauth_home_t, xserver_t, xserver_tmpfs_t, xauth_home_t;
 		type user_fonts_t, user_fonts_cache_t, user_fonts_config_t;
+		type user_themes_t;
 		type mesa_shader_cache_t, xdm_t;
 	')
 
@@ -207,6 +212,11 @@ template(`xserver_role',`
 	manage_files_pattern($2, user_fonts_config_t, user_fonts_config_t)
 	relabel_dirs_pattern($2, user_fonts_config_t, user_fonts_config_t)
 	relabel_files_pattern($2, user_fonts_config_t, user_fonts_config_t)
+
+	manage_dirs_pattern($2, user_themes_t, user_themes_t)
+	manage_files_pattern($2, user_themes_t, user_themes_t)
+	relabel_dirs_pattern($2, user_themes_t, user_themes_t)
+	relabel_files_pattern($2, user_themes_t, user_themes_t)
 
 	manage_dirs_pattern($2, mesa_shader_cache_t, mesa_shader_cache_t)
 	manage_files_pattern($2, mesa_shader_cache_t, mesa_shader_cache_t)
@@ -565,6 +575,37 @@ interface(`xserver_use_user_fonts',`
 
 	userdom_search_user_home_dirs($1)
 	xdg_search_cache_dirs($1)
+')
+
+########################################
+## <summary>
+##	Read user themes.
+## </summary>
+## <desc>
+##	<p>
+##	Read user themes.
+##	</p>
+##	<p>
+##	This is a templated interface, and should only
+##	be called from a per-userdomain template.
+##	</p>
+## </desc>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`xserver_use_user_themes',`
+	gen_require(`
+		type user_themes_t;
+	')
+
+	# Read per user themes
+	allow $1 user_themes_t:dir { list_dir_perms watch };
+	allow $1 user_themes_t:file { map read_file_perms };
+
+	userdom_search_user_home_dirs($1)
 ')
 
 ########################################

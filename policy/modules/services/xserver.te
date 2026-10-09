@@ -148,6 +148,9 @@ xdg_cache_content(user_fonts_cache_t)
 type user_fonts_config_t;
 userdom_user_home_content(user_fonts_config_t)
 
+type user_themes_t;
+userdom_user_home_content(user_themes_t)
+
 type iceauth_t;
 type iceauth_exec_t;
 userdom_user_application_domain(iceauth_t, iceauth_exec_t)
